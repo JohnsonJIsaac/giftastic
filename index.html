@@ -1,11 +1,125 @@
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+  <meta charset="utf-8">
+  <title>Giftastic</title>
 </head>
+
 <body>
-    
+
+  <div class="container">
+    <h1>Cartoon Gif Generator</h1>
+
+    <!-- Rendered Buttons will get Dumped Here  -->
+    <div id="buttons-view"></div>
+
+    <form id="movie-form">
+      <label for="movie-input">Add a Cartoon Gif: </label>
+      <input type="text" id="movie-input">
+      <br>
+
+      <!-- Button triggers new movie to be added -->
+      <input id="add-movie" type="submit" value="Submit">
+    </form>
+
+    <!-- Movies will Get Dumped Here -->
+    <div id="movies-view"></div>
+
+    <script type="text/javascript">
+      // Initial array of movies
+      const movies = ["Eraserhead", "The Notebook", "Mr. Nobody", "The Lion King"];
+
+      // displayMovieInfo function re-renders the HTML to display the appropriate content
+      function displayMovieInfo() {
+
+        const cartoon = this.getAttribute("data-name");
+        const queryURL = "api.giphy.com/v1/gifs/search?q=" + cartoon + "&apikey=ca5PfhWMlVKxpwkaLkZqlYp9a12c2dRZ&limit=10";
+
+        // Creating an fetch call for the specific movie button being clicked
+        fetch(queryURL)
+          .then(function (response) {
+            return response.json();
+          })
+          // After data comes back from the request
+          .then(function (responseJson) {
+            console.log(queryURL);
+
+            console.log(responseJson);
+            // storing the data from the fetch request in the results variable
+            const results = responseJson.data;
+
+            // Looping through each result item
+            for (let i = 0; i < results.length; i++) {
+
+              // Creating and storing a div tag
+              const animalDiv = document.createElement("div");
+
+              // Creating a paragraph tag with the result item's rating
+              const p = document.createElement("p")
+              p.innerHTML = "Rating: " + results[i].rating;
+
+              // Creating and storing an image tag
+              const animalImage = document.createElement("img");
+              // Setting the src attribute of the image to a property pulled off the result item
+              animalImage.setAttribute("src", results[i].images.fixed_height.url);
+
+              // Appending the paragraph and image tag to the animalDiv
+              animalDiv.append(p);
+              animalDiv.append(animalImage);
+
+              // Prependng the animalDiv to the HTML page in the "#gifs-appear-here" div
+              document.getElementById("gifs-appear-here").prepend(animalDiv);
+            }
+          });
+
+      }
+
+      // Function for displaying movie data
+      function renderButtons() {
+
+        // Deleting the buttons prior to adding new movies
+        // (this is necessary otherwise you will have repeat buttons)
+        document.getElementById("buttons-view").innerHTML = "";
+
+        // Looping through the array of movies
+        for (let i = 0; i < movies.length; i++) {
+
+          // Then dynamically generating buttons for each movie in the array
+          const a = document.createElement("button");
+          // Adding a class of movie to our button
+          a.classList.add("movie");
+          // Adding a data-attribute
+          a.setAttribute("data-name", movies[i]);
+          // Providing the initial button text
+          a.innerHTML = movies[i];
+          // Adding the button to the buttons-view div
+          document.getElementById("buttons-view").append(a);
+
+          // Function for displaying the movie info
+          a.addEventListener("click", displayMovieInfo);
+        }
+      }
+
+      // This function handles events where one button is clicked
+      document.getElementById("add-movie").addEventListener("click", function (event) {
+        event.preventDefault();
+
+        // This line grabs the input from the textbox
+        var movie = document.getElementById("movie-input").value.trim();
+
+        // Adding the movie from the textbox to our array
+        movies.push(movie);
+        console.log(movies);
+
+        // Calling renderButtons which handles the processing of our movie array
+        renderButtons();
+      });
+
+      // Calling the renderButtons function to display the intial buttons
+      renderButtons();
+    </script>
+  </div>
 </body>
+
 </html>
