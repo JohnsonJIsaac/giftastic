@@ -28,13 +28,13 @@
 
     <script type="text/javascript">
       // Initial array of movies
-      const movies = ["Eraserhead", "The Notebook", "Mr. Nobody", "The Lion King"];
+      const movies = ["Rick and Morty", "The Simpsons", "Looney Tunes", "Ren and Stimpy"];
 
       // displayMovieInfo function re-renders the HTML to display the appropriate content
       function displayMovieInfo() {
 
         const cartoon = this.getAttribute("data-name");
-        const queryURL = "api.giphy.com/v1/gifs/search?q=" + cartoon + "&apikey=ca5PfhWMlVKxpwkaLkZqlYp9a12c2dRZ&limit=10";
+        const queryURL = "https://api.giphy.com/v1/gifs/search?q=" + cartoon + "&apikey=ca5PfhWMlVKxpwkaLkZqlYp9a12c2dRZ&limit=10";
 
         // Creating an fetch call for the specific movie button being clicked
         fetch(queryURL)
@@ -69,7 +69,7 @@
               animalDiv.append(animalImage);
 
               // Prependng the animalDiv to the HTML page in the "#gifs-appear-here" div
-              document.getElementById("gifs-appear-here").prepend(animalDiv);
+              //document.getElementById("gifs-appear-here").prepend(animalDiv);
             }
           });
 
