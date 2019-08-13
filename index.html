@@ -9,40 +9,54 @@
 <body>
 
   <div class="container">
-    <h1>Cartoon Gif Generator</h1>
+    <h1>Animation Gif Generator</h1>
 
     <!-- Rendered Buttons will get Dumped Here  -->
     <div id="buttons-view"></div>
 
-    <form id="movie-form">
-      <label for="movie-input">Add a Cartoon Gif: </label>
-      <input type="text" id="movie-input">
+    <form id="gif-form">
+      <label for="gif-input">Add a Gif of Your Favorite Animated Show or Movie: </label>
+      <input type="text" id="gif-input">
       <br>
 
-      <!-- Button triggers new movie to be added -->
-      <input id="add-movie" type="submit" value="Submit">
+      <!-- Button triggers new gif to be added -->
+      <input id="add-gif" type="submit" value="Submit">
     </form>
 
-    <!-- Movies will Get Dumped Here -->
-    <div id="movies-view"></div>
+    <!-- gifs will Get Dumped Here -->
+    <div id="gifs-appear-here"></div>
 
     <script type="text/javascript">
-      // Initial array of movies
-      const movies = ["Rick and Morty", "The Simpsons", "Looney Tunes", "Ren and Stimpy"];
+      // Initial array of gifs
+      const gifs = ["Persepolis", "Futurama", "Akira", "Coraline", "Don Hertzfeld", "Studio Ghibli", "Looney Tunes", "Metalocalypse", "Wallace and Gromit" ];
 
-      // displayMovieInfo function re-renders the HTML to display the appropriate content
-      function displayMovieInfo() {
+      function pauseAndPlay() {
+        const state = this.getAttribute("data-state");
+        if (state === "still") {
+          this.setAttribute("data-state", "animate");
+          this.setAttribute("src", this.getAttribute("data-animate"));
+        } else {
+          this.setAttribute("data-state", "still");
+          this.setAttribute("src", this.getAttribute("data-still"));
+        }
+
+      }
+
+      // displaygifInfo function re-renders the HTML to display the appropriate content
+      function displaygifInfo() {
 
         const cartoon = this.getAttribute("data-name");
         const queryURL = "https://api.giphy.com/v1/gifs/search?q=" + cartoon + "&apikey=ca5PfhWMlVKxpwkaLkZqlYp9a12c2dRZ&limit=10";
 
-        // Creating an fetch call for the specific movie button being clicked
+        // Creating a fetch call for the specific gif button being clicked
         fetch(queryURL)
           .then(function (response) {
-            return response.json();
+          return response.json();
           })
           // After data comes back from the request
           .then(function (responseJson) {
+
+            document.getElementById("gifs-appear-here").innerHTML = "";
             console.log(queryURL);
 
             console.log(responseJson);
@@ -53,66 +67,70 @@
             for (let i = 0; i < results.length; i++) {
 
               // Creating and storing a div tag
-              const animalDiv = document.createElement("div");
+              const toonDiv = document.createElement("div");
 
               // Creating a paragraph tag with the result item's rating
               const p = document.createElement("p")
               p.innerHTML = "Rating: " + results[i].rating;
 
               // Creating and storing an image tag
-              const animalImage = document.createElement("img");
+              const toonImage = document.createElement("img");
               // Setting the src attribute of the image to a property pulled off the result item
-              animalImage.setAttribute("src", results[i].images.fixed_height.url);
+              toonImage.setAttribute("src", results[i].images.fixed_height_still.url);
+              toonImage.setAttribute("data-state", "still");
+              toonImage.setAttribute("data-still", results[i].images.fixed_height_still.url)
+              toonImage.setAttribute("data-animate", results[i].images.fixed_height.url)
+              toonImage.addEventListener("click",pauseAndPlay);
 
-              // Appending the paragraph and image tag to the animalDiv
-              animalDiv.append(p);
-              animalDiv.append(animalImage);
+              // Appending the paragraph and image tag to the toonDiv
+              toonDiv.append(p);
+              toonDiv.append(toonImage);
 
-              // Prependng the animalDiv to the HTML page in the "#gifs-appear-here" div
-              //document.getElementById("gifs-appear-here").prepend(animalDiv);
+              // Prependng the toonDiv to the HTML page in the "#gifs-appear-here" div
+              document.getElementById("gifs-appear-here").prepend(toonDiv);
             }
           });
 
       }
 
-      // Function for displaying movie data
+      // Function for displaying gif data
       function renderButtons() {
 
-        // Deleting the buttons prior to adding new movies
+        // Deleting the buttons prior to adding new gifs
         // (this is necessary otherwise you will have repeat buttons)
         document.getElementById("buttons-view").innerHTML = "";
 
-        // Looping through the array of movies
-        for (let i = 0; i < movies.length; i++) {
+        // Looping through the array of gifs
+        for (let i = 0; i < gifs.length; i++) {
 
-          // Then dynamically generating buttons for each movie in the array
+          // Then dynamically generating buttons for each gif in the array
           const a = document.createElement("button");
-          // Adding a class of movie to our button
-          a.classList.add("movie");
+          // Adding a class of gif to our button
+          a.classList.add("gif");
           // Adding a data-attribute
-          a.setAttribute("data-name", movies[i]);
+          a.setAttribute("data-name", gifs[i]);
           // Providing the initial button text
-          a.innerHTML = movies[i];
+          a.innerHTML = gifs[i];
           // Adding the button to the buttons-view div
           document.getElementById("buttons-view").append(a);
 
-          // Function for displaying the movie info
-          a.addEventListener("click", displayMovieInfo);
+          // Function for displaying the gif info
+          a.addEventListener("click", displaygifInfo);
         }
       }
 
       // This function handles events where one button is clicked
-      document.getElementById("add-movie").addEventListener("click", function (event) {
+      document.getElementById("add-gif").addEventListener("click", function (event) {
         event.preventDefault();
 
         // This line grabs the input from the textbox
-        var movie = document.getElementById("movie-input").value.trim();
+        var gif = document.getElementById("gif-input").value.trim();
 
-        // Adding the movie from the textbox to our array
-        movies.push(movie);
-        console.log(movies);
+        // Adding the gif from the textbox to our array
+        gifs.push(gif);
+        console.log(gifs);
 
-        // Calling renderButtons which handles the processing of our movie array
+        // Calling renderButtons which handles the processing of our gif array
         renderButtons();
       });
 
